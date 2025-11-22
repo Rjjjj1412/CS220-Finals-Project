@@ -18,7 +18,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -50,6 +49,8 @@ fun AdminEditProfileScreen(navController: NavController) {
 
     var backPressed by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
+    val customColor = Color(0xFFAC0000)
 
     // Overshoot exit animation states
     val overshootOffset = 30f
@@ -189,13 +190,24 @@ fun AdminEditProfileScreen(navController: NavController) {
                     onValueChange = { fullName = it },
                     label = { Text("Full Name") },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = customColor,
+                        focusedLabelColor = customColor,
+                        cursorColor = customColor
+                    ),
                     modifier = Modifier.fillMaxWidth()
+
                 )
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
                     label = { Text("Email") },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = customColor,
+                        focusedLabelColor = customColor,
+                        cursorColor = customColor
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
@@ -205,6 +217,11 @@ fun AdminEditProfileScreen(navController: NavController) {
                     },
                     label = { Text("Phone Number") },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = customColor,
+                        focusedLabelColor = customColor,
+                        cursorColor = customColor
+                    ),
                     placeholder = { Text("Ex. 09696610598") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -262,6 +279,7 @@ fun AdminEditProfileScreen(navController: NavController) {
 }
 
 @Composable
+
 fun PasswordField(
     label: String,
     value: String,
@@ -269,11 +287,17 @@ fun PasswordField(
     visible: Boolean,
     onToggleVisibility: () -> Unit
 ) {
+    val customColor = Color(0xFFAC0000)
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
         singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = customColor,
+            focusedLabelColor = customColor,
+            cursorColor = customColor
+        ),
         visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             Icon(

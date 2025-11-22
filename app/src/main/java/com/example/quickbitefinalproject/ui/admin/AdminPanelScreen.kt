@@ -90,9 +90,9 @@ fun AdminPanelScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     AdminCard(
-                        title = "Menu",
+                        title = "Menu Management",
                         iconRes = R.drawable.ic_menu,
-                        onClick = { }
+                        onClick = {navController.navigate("admin_menu_management")}
                     )
                     AdminCard(
                         title = "Profile",

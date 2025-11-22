@@ -30,6 +30,8 @@ fun LoginAdminScreen(navController: NavController) {
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    val customColor = Color(0xFFAC0000)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -128,6 +130,11 @@ fun LoginAdminScreen(navController: NavController) {
                                 contentDescription = null
                             )
                         },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = customColor,
+                            focusedLabelColor = customColor,
+                            cursorColor = customColor
+                        ),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -145,6 +152,11 @@ fun LoginAdminScreen(navController: NavController) {
                                 contentDescription = null
                             )
                         },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = customColor,
+                            focusedLabelColor = customColor,
+                            cursorColor = customColor
+                        ),
                         trailingIcon = {
                             Icon(
                                 painter = painterResource(
