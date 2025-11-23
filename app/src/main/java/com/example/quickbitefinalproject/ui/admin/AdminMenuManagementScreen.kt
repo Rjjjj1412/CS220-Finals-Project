@@ -19,9 +19,24 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,28 +50,49 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.quickbitefinalproject.R
+import com.example.quickbitefinalproject.model.ProductItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 // ------------------------------
-// Model
-// ------------------------------
-data class ProductItem(
-    val id: String,
-    val name: String,
-    val price: Double,
-    val category: String
-)
-
-// ------------------------------
-// Dummy products
+// Dummy products (for now)
 // ------------------------------
 val dummyProducts = listOf(
-    ProductItem("1", "Zinger Burger", 2.0, "Burgers"),
-    ProductItem("2", "Long Burger", 5.0, "Burgers"),
-    ProductItem("3", "Sandwich", 2.0, "Sandwiches"),
-    ProductItem("4", "Beef Burger", 3.0, "Burgers"),
-    ProductItem("5", "Roll Paratha", 3.0, "Sides")
+    ProductItem(
+        id = "1",
+        name = "Zinger Burger",
+        description = "Crispy chicken patty with lettuce",
+        price = 2.0,
+        category = "Burgers"
+    ),
+    ProductItem(
+        id = "2",
+        name = "Long Burger",
+        description = "Long grilled patty burger",
+        price = 5.0,
+        category = "Burgers"
+    ),
+    ProductItem(
+        id = "3",
+        name = "Sandwich",
+        description = "Classic sandwich meal",
+        price = 2.0,
+        category = "Sandwiches"
+    ),
+    ProductItem(
+        id = "4",
+        name = "Beef Burger",
+        description = "Premium beef patty",
+        price = 3.0,
+        category = "Burgers"
+    ),
+    ProductItem(
+        id = "5",
+        name = "Roll Paratha",
+        description = "Spicy chicken paratha roll",
+        price = 3.0,
+        category = "Sides"
+    )
 )
 
 // ------------------------------
@@ -67,15 +103,24 @@ fun AdminMenuManagementScreen(navController: NavController) {
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
     var selectedTab by remember { mutableStateOf(savedStateHandle?.get<Int>("selectedTab") ?: 0) }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
+
     var backPressed by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
     val redColor = Color(0xFFAC0000)
-    val shadowColor = Color(0xFFFFEEDA)
 
-    val targetOffsetX by animateDpAsState(if (backPressed) 120.dp else 0.dp)
-    val alpha by animateFloatAsState(if (backPressed) 0f else 1f)
+    val targetOffsetX by animateDpAsState(
+        targetValue = if (backPressed) 120.dp else 0.dp,
+        label = "adminMenuOffset"
+    )
+    val alpha by animateFloatAsState(
+        targetValue = if (backPressed) 0f else 1f,
+        label = "adminMenuAlpha"
+    )
 
-    var showDeleteDialog by remember { mutableStateOf<Pair<Boolean, ProductItem?>>(false to null) }
+    var showDeleteDialog by remember {
+        mutableStateOf<Pair<Boolean, ProductItem?>>(false to null)
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -144,34 +189,43 @@ fun AdminMenuManagementScreen(navController: NavController) {
                             selectedTab = index
                             savedStateHandle?.set("selectedTab", index)
                         },
-                        text = { Text(title, color = if (selectedTab == index) redColor else Color.Black) },
-                        interactionSource = remember { MutableInteractionSource() }, // removes gray hover
+                        text = {
+                            Text(
+                                text = title,
+                                color = if (selectedTab == index) redColor else Color.Black
+                            )
+                        },
+                        interactionSource = remember { MutableInteractionSource() },
                         selectedContentColor = redColor,
                         unselectedContentColor = Color.Black
                     )
                 }
             }
 
-            // Content
+            // Content per tab
             when (selectedTab) {
                 0 -> AdminCategoriesTab(
                     onCategoryClick = { category ->
                         selectedCategory = category
                         selectedTab = 1
+                        savedStateHandle?.set("selectedTab", 1)
                     }
                 )
+
                 1 -> AdminProductsTab(
                     products = if (selectedCategory == null) dummyProducts
                     else dummyProducts.filter { it.category == selectedCategory },
                     onEditClick = { item ->
                         navController.navigate("edit_item/${item.id}?tabIndex=$selectedTab")
-                   },
-                    onDeleteClick = { item -> showDeleteDialog = true to item }
+                    },
+                    onDeleteClick = { item ->
+                        showDeleteDialog = true to item
+                    }
                 )
             }
         }
 
-        // Animated Circular FAB with shadow FFEEDA
+        // Floating Action Button
         PressableFAB(
             onClick = {
                 navController.navigate("add_item_page?tabIndex=$selectedTab")
@@ -180,8 +234,7 @@ fun AdminMenuManagementScreen(navController: NavController) {
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 60.dp),
             containerColor = redColor,
-            iconColor = Color.White,
-            shadowColor = shadowColor
+            iconColor = Color.White
         )
     }
 
@@ -192,19 +245,33 @@ fun AdminMenuManagementScreen(navController: NavController) {
             onDismissRequest = { showDeleteDialog = false to null },
             containerColor = Color(0xFFFFEEDA),
             tonalElevation = 0.dp,
-            title = { Text("Delete Item", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
-            text = { Text("Are you sure you want to delete '${itemToDelete.name}'?", fontSize = 16.sp) },
+            title = {
+                Text("Delete Item", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            },
+            text = {
+                Text(
+                    "Are you sure you want to delete '${itemToDelete.name}'?",
+                    fontSize = 16.sp
+                )
+            },
             confirmButton = {
                 TextButton(
-                    onClick = { showDeleteDialog = false to null /* TODO delete */ },
+                    onClick = {
+                        // TODO: delete from real data source when connected to backend
+                        showDeleteDialog = false to null
+                    },
                     colors = ButtonDefaults.textButtonColors(contentColor = redColor)
-                ) { Text("Yes", fontWeight = FontWeight.Bold) }
+                ) {
+                    Text("Yes", fontWeight = FontWeight.Bold)
+                }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDeleteDialog = false to null },
                     colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF646464))
-                ) { Text("No", fontWeight = FontWeight.Bold) }
+                ) {
+                    Text("No", fontWeight = FontWeight.Bold)
+                }
             }
         )
     }
@@ -216,6 +283,7 @@ fun AdminMenuManagementScreen(navController: NavController) {
 @Composable
 fun AdminCategoriesTab(onCategoryClick: (String) -> Unit) {
     val categories = listOf("Burgers", "Sandwiches", "Sides", "Drinks", "Desserts")
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -233,7 +301,11 @@ fun AdminCategoriesTab(onCategoryClick: (String) -> Unit) {
 }
 
 @Composable
-fun AdminCategoryCard(title: String, itemCount: Int, onClick: () -> Unit) {
+fun AdminCategoryCard(
+    title: String,
+    itemCount: Int,
+    onClick: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3EA)),
@@ -242,7 +314,10 @@ fun AdminCategoryCard(title: String, itemCount: Int, onClick: () -> Unit) {
             .height(110.dp)
             .clickable { onClick() }
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxSize()
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.placeholder_food),
                 contentDescription = null,
@@ -254,9 +329,18 @@ fun AdminCategoryCard(title: String, itemCount: Int, onClick: () -> Unit) {
             )
             Spacer(Modifier.width(18.dp))
             Column {
-                Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFFAC0000))
+                Text(
+                    title,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFAC0000)
+                )
                 Spacer(Modifier.height(6.dp))
-                Text("$itemCount Items", fontSize = 14.sp, color = Color(0xFF646464))
+                Text(
+                    "$itemCount Items",
+                    fontSize = 14.sp,
+                    color = Color(0xFF646464)
+                )
             }
         }
     }
@@ -285,14 +369,22 @@ fun AdminProductsTab(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(products) { item ->
-                AdminProductCard(item, onEdit = { onEditClick(item) }, onDelete = { onDeleteClick(item) })
+                AdminProductCard(
+                    item = item,
+                    onEdit = { onEditClick(item) },
+                    onDelete = { onDeleteClick(item) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun AdminProductCard(item: ProductItem, onEdit: () -> Unit, onDelete: () -> Unit) {
+fun AdminProductCard(
+    item: ProductItem,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFE8D9)),
@@ -301,7 +393,8 @@ fun AdminProductCard(item: ProductItem, onEdit: () -> Unit, onDelete: () -> Unit
             .height(180.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Top-right icons
+
+            // Edit/Delete icons
             Row(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -312,30 +405,42 @@ fun AdminProductCard(item: ProductItem, onEdit: () -> Unit, onDelete: () -> Unit
                 AnimatedIcon(R.drawable.ic_delete, onClick = onDelete)
             }
 
-            // Product image (center, no shadow)
+            // Product image
             Image(
                 painter = painterResource(id = R.drawable.placeholder_food),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(100.dp).align(Alignment.Center)
+                modifier = Modifier
+                    .size(100.dp)
+                    .align(Alignment.Center)
             )
 
-            // Name & price at bottom
+            // Name & price
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 8.dp)
             ) {
-                Text(item.name, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color.Black)
-                Text("${item.price}$", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFFAC0000))
+                Text(
+                    item.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    color = Color.Black
+                )
+                Text(
+                    "₱${item.price}",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFFAC0000)
+                )
             }
         }
     }
 }
 
 // ------------------------------
-// Animated Icon for Edit/Delete
+// Animated Icon (Edit / Delete)
 // ------------------------------
 @Composable
 fun AnimatedIcon(iconRes: Int, onClick: () -> Unit) {
@@ -346,7 +451,8 @@ fun AnimatedIcon(iconRes: Int, onClick: () -> Unit) {
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium
-        )
+        ),
+        label = "iconScale"
     )
 
     Icon(
@@ -361,12 +467,11 @@ fun AnimatedIcon(iconRes: Int, onClick: () -> Unit) {
                     onPress = {
                         pressed = true
                         try {
-                            // Wait for release or cancel
                             tryAwaitRelease()
                         } finally {
                             pressed = false
                         }
-                        onClick() // trigger the click after release
+                        onClick()
                     }
                 )
             }
@@ -374,23 +479,24 @@ fun AnimatedIcon(iconRes: Int, onClick: () -> Unit) {
 }
 
 // ------------------------------
-// Pressable FAB Composable
+// Pressable FAB (Add Item)
 // ------------------------------
 @Composable
 fun PressableFAB(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     containerColor: Color = Color.Red,
-    iconColor: Color = Color.White,
-    shadowColor: Color = Color(0xFFFFEEDA)
+    iconColor: Color = Color.White
 ) {
     var pressed by remember { mutableStateOf(false) }
+
     val scale by animateFloatAsState(
         targetValue = if (pressed) 1.5f else 1f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
-        )
+        ),
+        label = "fabScale"
     )
 
     FloatingActionButton(
@@ -415,6 +521,10 @@ fun PressableFAB(
             pressedElevation = 12.dp
         )
     ) {
-        Icon(Icons.Default.Add, contentDescription = "Add Item", modifier = Modifier.size(36.dp))
+        Icon(
+            Icons.Default.Add,
+            contentDescription = "Add Item",
+            modifier = Modifier.size(36.dp)
+        )
     }
 }

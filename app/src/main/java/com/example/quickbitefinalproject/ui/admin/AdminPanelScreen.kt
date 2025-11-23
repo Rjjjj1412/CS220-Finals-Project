@@ -5,13 +5,20 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,7 +39,7 @@ fun AdminPanelScreen(navController: NavController) {
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // Beige curved background
+        // Curved beige background
         Canvas(modifier = Modifier.fillMaxSize()) {
             val width = size.width
             val height = size.height
@@ -92,12 +99,12 @@ fun AdminPanelScreen(navController: NavController) {
                     AdminCard(
                         title = "Menu Management",
                         iconRes = R.drawable.ic_menu,
-                        onClick = {navController.navigate("admin_menu_management")}
+                        onClick = { navController.navigate("admin_menu_management") }
                     )
                     AdminCard(
                         title = "Profile",
                         iconRes = R.drawable.ic_profile,
-                        onClick = {navController.navigate("admin_edit_profile") }
+                        onClick = { navController.navigate("admin_edit_profile") }
                     )
                 }
 
@@ -119,7 +126,7 @@ fun AdminPanelScreen(navController: NavController) {
         }
     }
 
-    // LOGOUT CONFIRMATION DIALOG
+    // Logout confirmation dialog
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
@@ -174,8 +181,13 @@ fun AdminPanelScreen(navController: NavController) {
 }
 
 @Composable
-fun AdminCard(title: String, iconRes: Int, onClick: () -> Unit) {
+fun AdminCard(
+    title: String,
+    iconRes: Int,
+    onClick: () -> Unit
+) {
     var pressed by remember { mutableStateOf(false) }
+
     val animatedSize by animateDpAsState(
         targetValue = if (pressed) 150.dp else 140.dp,
         animationSpec = tween(durationMillis = 150)

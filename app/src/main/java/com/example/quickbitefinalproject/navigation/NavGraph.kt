@@ -1,17 +1,17 @@
+package com.example.quickbitefinalproject.navigation
+
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.quickbitefinalproject.ui.admin.AddItemPage
-import com.example.quickbitefinalproject.ui.admin.AdminEditProfileScreen
-import com.example.quickbitefinalproject.ui.admin.AdminMenuManagementScreen
-import com.example.quickbitefinalproject.ui.admin.AdminPanelScreen
-import com.example.quickbitefinalproject.ui.admin.EditItemPage
 import com.example.quickbitefinalproject.ui.splash.SplashScreen
 import com.example.quickbitefinalproject.ui.admin.LoginAdminScreen
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-
+import com.example.quickbitefinalproject.ui.admin.AdminPanelScreen
+import com.example.quickbitefinalproject.ui.admin.AdminMenuManagementScreen
+import com.example.quickbitefinalproject.ui.admin.EditItemPage
+import com.example.quickbitefinalproject.ui.admin.AddItemPage
+import com.example.quickbitefinalproject.ui.kiosk.MenuScreen
+import com.example.quickbitefinalproject.ui.kiosk.CartScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
@@ -21,47 +21,88 @@ fun AppNavGraph(navController: NavHostController) {
         startDestination = "splash"
     ) {
 
+        // -----------------------
+        // SPLASH SCREEN
+        // -----------------------
         composable("splash") {
             SplashScreen(navController)
         }
 
+        // -----------------------
+        // ADMIN LOGIN
+        // -----------------------
         composable("admin_login") {
             LoginAdminScreen(navController)
         }
 
+        // -----------------------
+        // ADMIN PANEL (HOME)
+        // -----------------------
         composable("admin_panel") {
             AdminPanelScreen(navController)
         }
 
-        composable ( "admin_edit_profile") {
-            AdminEditProfileScreen(navController)
-        }
-
-        composable ("admin_menu_management" ) {
+        // -----------------------
+        // MENU MANAGEMENT (ADMIN)
+        // -----------------------
+        composable("admin_menu_management") {
             AdminMenuManagementScreen(navController)
         }
 
+        // -----------------------
+        // EDIT ITEM PAGE (ADMIN)
+        // -----------------------
         composable(
-            "add_item_page?tabIndex={tabIndex}",
-            arguments = listOf(navArgument("tabIndex") {
-                type = NavType.IntType
-                defaultValue = 0
-            })
+            route = "edit_item/{itemId}?tabIndex={tabIndex}",
         ) { backStackEntry ->
-            val tabIndex = backStackEntry.arguments?.getInt("tabIndex") ?: 0
-            AddItemPage(navController, tabIndex)
+
+            val itemId = backStackEntry.arguments?.getString("itemId")
+            val tabIndex =
+                backStackEntry.arguments?.getString("tabIndex")?.toIntOrNull() ?: 0
+
+            EditItemPage(
+                navController = navController,
+                itemId = itemId,
+                tabIndex = tabIndex
+            )
         }
 
+        // -----------------------
+        // ADD ITEM PAGE (ADMIN)
+        // -----------------------
         composable(
-            "edit_item/{itemId}?tabIndex={tabIndex}",
-            arguments = listOf(
-                navArgument("itemId") { type = NavType.StringType },
-                navArgument("tabIndex") { type = NavType.IntType; defaultValue = 1; }
-            )
+            route = "add_item_page?tabIndex={tabIndex}"
         ) { backStackEntry ->
-            val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
-            val tabIndex = backStackEntry.arguments?.getInt("tabIndex") ?: 0
-            EditItemPage(navController, itemId, tabIndex)
+
+            val tabIndex =
+                backStackEntry.arguments?.getString("tabIndex")?.toIntOrNull() ?: 0
+
+            AddItemPage(
+                navController = navController,
+                tabIndex = tabIndex
+            )
+        }
+
+        // -----------------------
+        // KIOSK MENU (CUSTOMER)
+        // example route: "kiosk_menu/burgers"
+        // -----------------------
+        composable(
+            route = "kiosk_menu/{categoryId}"
+        ) { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+            MenuScreen(
+                navController = navController,
+                categoryId = categoryId
+            )
+        }
+
+        // -----------------------
+        // KIOSK CART (CUSTOMER)
+        // route: "kiosk_cart"
+        // -----------------------
+        composable("kiosk_cart") {
+            CartScreen(navController = navController)
         }
     }
 }
