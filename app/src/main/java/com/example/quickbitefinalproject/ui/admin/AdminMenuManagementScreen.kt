@@ -64,7 +64,8 @@ val dummyProducts = listOf(
 // ------------------------------
 @Composable
 fun AdminMenuManagementScreen(navController: NavController) {
-    var selectedTab by remember { mutableStateOf(0) }
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    var selectedTab by remember { mutableStateOf(savedStateHandle?.get<Int>("selectedTab") ?: 0) }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     var backPressed by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -139,7 +140,10 @@ fun AdminMenuManagementScreen(navController: NavController) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTab == index,
-                        onClick = { selectedTab = index },
+                        onClick = {
+                            selectedTab = index
+                            savedStateHandle?.set("selectedTab", index)
+                        },
                         text = { Text(title, color = if (selectedTab == index) redColor else Color.Black) },
                         interactionSource = remember { MutableInteractionSource() }, // removes gray hover
                         selectedContentColor = redColor,
@@ -159,7 +163,9 @@ fun AdminMenuManagementScreen(navController: NavController) {
                 1 -> AdminProductsTab(
                     products = if (selectedCategory == null) dummyProducts
                     else dummyProducts.filter { it.category == selectedCategory },
-                    onEditClick = { /* TODO */ },
+                    onEditClick = { item ->
+                        navController.navigate("edit_item/${item.id}?tabIndex=$selectedTab")
+                   },
                     onDeleteClick = { item -> showDeleteDialog = true to item }
                 )
             }
@@ -167,7 +173,9 @@ fun AdminMenuManagementScreen(navController: NavController) {
 
         // Animated Circular FAB with shadow FFEEDA
         PressableFAB(
-            onClick = { /* TODO */ },
+            onClick = {
+                navController.navigate("add_item_page?tabIndex=$selectedTab")
+            },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 60.dp),
@@ -332,8 +340,9 @@ fun AdminProductCard(item: ProductItem, onEdit: () -> Unit, onDelete: () -> Unit
 @Composable
 fun AnimatedIcon(iconRes: Int, onClick: () -> Unit) {
     var pressed by remember { mutableStateOf(false) }
+
     val scale by animateFloatAsState(
-        targetValue = if (pressed) 1.2f else 1f,
+        targetValue = if (pressed) 1.3f else 1f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium
@@ -341,7 +350,7 @@ fun AnimatedIcon(iconRes: Int, onClick: () -> Unit) {
     )
 
     Icon(
-        painter = painterResource(iconRes),
+        painter = painterResource(id = iconRes),
         contentDescription = null,
         tint = Color(0xFFAC0000),
         modifier = Modifier
@@ -351,16 +360,16 @@ fun AnimatedIcon(iconRes: Int, onClick: () -> Unit) {
                 detectTapGestures(
                     onPress = {
                         pressed = true
-                        tryAwaitRelease()
-                        pressed = false
+                        try {
+                            // Wait for release or cancel
+                            tryAwaitRelease()
+                        } finally {
+                            pressed = false
+                        }
+                        onClick() // trigger the click after release
                     }
                 )
             }
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { onClick() }
-            )
     )
 }
 
@@ -377,7 +386,7 @@ fun PressableFAB(
 ) {
     var pressed by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
-        targetValue = if (pressed) 1.15f else 1f,
+        targetValue = if (pressed) 1.5f else 1f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
