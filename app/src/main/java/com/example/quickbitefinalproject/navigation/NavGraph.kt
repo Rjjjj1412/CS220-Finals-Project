@@ -10,6 +10,7 @@ import com.example.quickbitefinalproject.ui.admin.AdminPanelScreen
 import com.example.quickbitefinalproject.ui.admin.AdminMenuManagementScreen
 import com.example.quickbitefinalproject.ui.admin.EditItemPage
 import com.example.quickbitefinalproject.ui.admin.AddItemPage
+import com.example.quickbitefinalproject.ui.kiosk.MainMenuScreen
 import com.example.quickbitefinalproject.ui.kiosk.MenuScreen
 import com.example.quickbitefinalproject.ui.kiosk.CartScreen
 
@@ -21,41 +22,51 @@ fun AppNavGraph(navController: NavHostController) {
         startDestination = "splash"
     ) {
 
-        // -----------------------
-        // SPLASH SCREEN
-        // -----------------------
+        // ---------- SPLASH ----------
         composable("splash") {
             SplashScreen(navController)
         }
 
-        // -----------------------
-        // ADMIN LOGIN
-        // -----------------------
+        // ---------- CUSTOMER MAIN MENU ----------
+        composable("main_menu") {
+            MainMenuScreen(navController)
+        }
+
+        // ---------- KIOSK MENU BY CATEGORY ----------
+        composable(
+            route = "kiosk_menu/{categoryId}"
+        ) { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+            MenuScreen(
+                navController = navController,
+                categoryId = categoryId
+            )
+        }
+
+        // ---------- KIOSK CART ----------
+        composable("kiosk_cart") {
+            CartScreen(navController)
+        }
+
+        // ---------- ADMIN LOGIN ----------
         composable("admin_login") {
             LoginAdminScreen(navController)
         }
 
-        // -----------------------
-        // ADMIN PANEL (HOME)
-        // -----------------------
+        // ---------- ADMIN PANEL ----------
         composable("admin_panel") {
             AdminPanelScreen(navController)
         }
 
-        // -----------------------
-        // MENU MANAGEMENT (ADMIN)
-        // -----------------------
+        // ---------- ADMIN MENU MGMT ----------
         composable("admin_menu_management") {
             AdminMenuManagementScreen(navController)
         }
 
-        // -----------------------
-        // EDIT ITEM PAGE (ADMIN)
-        // -----------------------
+        // ---------- ADMIN EDIT ITEM ----------
         composable(
-            route = "edit_item/{itemId}?tabIndex={tabIndex}",
+            route = "edit_item/{itemId}?tabIndex={tabIndex}"
         ) { backStackEntry ->
-
             val itemId = backStackEntry.arguments?.getString("itemId")
             val tabIndex =
                 backStackEntry.arguments?.getString("tabIndex")?.toIntOrNull() ?: 0
@@ -67,13 +78,10 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        // -----------------------
-        // ADD ITEM PAGE (ADMIN)
-        // -----------------------
+        // ---------- ADMIN ADD ITEM ----------
         composable(
             route = "add_item_page?tabIndex={tabIndex}"
         ) { backStackEntry ->
-
             val tabIndex =
                 backStackEntry.arguments?.getString("tabIndex")?.toIntOrNull() ?: 0
 
@@ -81,28 +89,6 @@ fun AppNavGraph(navController: NavHostController) {
                 navController = navController,
                 tabIndex = tabIndex
             )
-        }
-
-        // -----------------------
-        // KIOSK MENU (CUSTOMER)
-        // example route: "kiosk_menu/burgers"
-        // -----------------------
-        composable(
-            route = "kiosk_menu/{categoryId}"
-        ) { backStackEntry ->
-            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
-            MenuScreen(
-                navController = navController,
-                categoryId = categoryId
-            )
-        }
-
-        // -----------------------
-        // KIOSK CART (CUSTOMER)
-        // route: "kiosk_cart"
-        // -----------------------
-        composable("kiosk_cart") {
-            CartScreen(navController = navController)
         }
     }
 }

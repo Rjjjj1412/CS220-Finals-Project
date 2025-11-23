@@ -1,12 +1,12 @@
 package com.example.quickbitefinalproject.ui.splash
 
-import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,19 +15,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.quickbitefinalproject.R
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SplashScreen(navController: NavController) {
 
     // Auto-Navigate after delay
     LaunchedEffect(Unit) {
         Handler(Looper.getMainLooper()).postDelayed({
-
             navController.navigate("main_menu") {
                 popUpTo("splash") { inclusive = true }
             }
-
-        }, 2000) // 2 seconds splash delay
+        }, 2000) // 2 seconds splash time
     }
 
     Box(
@@ -46,6 +43,7 @@ fun SplashScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(120.dp))
 
+            // App Logo (Center)
             Image(
                 painter = painterResource(id = R.drawable.quickbite_logo),
                 contentDescription = "QuickBite Logo",
@@ -54,6 +52,7 @@ fun SplashScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.weight(1f))
 
+            // Bottom Food Illustration
             Image(
                 painter = painterResource(id = R.drawable.bottom_food),
                 contentDescription = "Food Illustration",
