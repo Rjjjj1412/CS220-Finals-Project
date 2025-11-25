@@ -13,6 +13,10 @@ import com.example.quickbitefinalproject.ui.admin.AddItemPage
 import com.example.quickbitefinalproject.ui.kiosk.MainMenuScreen
 import com.example.quickbitefinalproject.ui.kiosk.MenuScreen
 import com.example.quickbitefinalproject.ui.kiosk.CartScreen
+import com.example.quickbitefinalproject.ui.kiosk.CheckoutScreen
+import com.example.quickbitefinalproject.ui.kiosk.OrderSuccessScreen
+import com.example.quickbitefinalproject.ui.kiosk.UserAuthScreen
+import com.example.quickbitefinalproject.ui.kiosk.UserProfileScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
@@ -22,51 +26,67 @@ fun AppNavGraph(navController: NavHostController) {
         startDestination = "splash"
     ) {
 
-        // ---------- SPLASH ----------
+        // SPLASH
         composable("splash") {
             SplashScreen(navController)
         }
 
-        // ---------- CUSTOMER MAIN MENU ----------
+        // MAIN MENU (customer landing page)
         composable("main_menu") {
             MainMenuScreen(navController)
         }
 
-        // ---------- KIOSK MENU BY CATEGORY ----------
-        composable(
-            route = "kiosk_menu/{categoryId}"
-        ) { backStackEntry ->
+        // KIOSK CATEGORY MENU (items under category)
+        composable("kiosk_menu/{categoryId}") { backStackEntry ->
             val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
-            MenuScreen(
-                navController = navController,
-                categoryId = categoryId
-            )
+            MenuScreen(navController = navController, categoryId = categoryId)
         }
 
-        // ---------- KIOSK CART ----------
+        // CART
         composable("kiosk_cart") {
             CartScreen(navController)
         }
 
-        // ---------- ADMIN LOGIN ----------
+        // CHECKOUT
+        composable("kiosk_checkout") {
+            CheckoutScreen(navController)
+        }
+
+        // ORDER SUCCESS
+        composable("order_success") {
+            OrderSuccessScreen(navController)
+        }
+
+        // USER AUTH (login/signup page for customers)
+        composable("user_auth") {
+            UserAuthScreen(navController)
+        }
+
+        // USER PROFILE
+        composable("user_profile") {
+            UserProfileScreen(navController)
+        }
+
+        // ADMIN LOGIN
         composable("admin_login") {
             LoginAdminScreen(navController)
         }
 
-        // ---------- ADMIN PANEL ----------
+        // ADMIN PANEL (HOME)
         composable("admin_panel") {
             AdminPanelScreen(navController)
         }
 
-        // ---------- ADMIN MENU MGMT ----------
+        // MENU MANAGEMENT
         composable("admin_menu_management") {
             AdminMenuManagementScreen(navController)
         }
 
-        // ---------- ADMIN EDIT ITEM ----------
+        // EDIT ITEM PAGE
         composable(
-            route = "edit_item/{itemId}?tabIndex={tabIndex}"
+            route = "edit_item/{itemId}?tabIndex={tabIndex}",
         ) { backStackEntry ->
+
             val itemId = backStackEntry.arguments?.getString("itemId")
             val tabIndex =
                 backStackEntry.arguments?.getString("tabIndex")?.toIntOrNull() ?: 0
@@ -78,10 +98,11 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        // ---------- ADMIN ADD ITEM ----------
+        // ADD ITEM PAGE
         composable(
             route = "add_item_page?tabIndex={tabIndex}"
         ) { backStackEntry ->
+
             val tabIndex =
                 backStackEntry.arguments?.getString("tabIndex")?.toIntOrNull() ?: 0
 

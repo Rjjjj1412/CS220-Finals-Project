@@ -37,13 +37,15 @@ fun MenuScreen(
     navController: NavController,
     categoryId: String
 ) {
+    val quickBiteRed = Color(0xFFAC0000)
+
+    // Get chosen category + items from repository
     val category = remember {
         MenuRepository.getCategories().firstOrNull { it.id == categoryId }
     }
     val items = remember {
         MenuRepository.getItemsByCategory(categoryId)
     }
-    val quickBiteRed = Color(0xFFAC0000)
 
     Scaffold(
         topBar = {
@@ -83,8 +85,8 @@ fun MenuScreen(
                 MenuItemCard(
                     item = item,
                     onAddToCart = {
-                        // For now just navigate to cart screen;
-                        // make sure you have a "kiosk_cart" route in NavGraph that shows CartScreen
+                        // For now just go to cart.
+                        // Later you can hook this into a real CartRepository / ViewModel.
                         navController.navigate("kiosk_cart")
                     }
                 )

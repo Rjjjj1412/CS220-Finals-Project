@@ -1,5 +1,3 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
-
 package com.example.quickbitefinalproject.ui.kiosk
 
 import androidx.compose.foundation.background
@@ -12,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,17 +32,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-// Simple cart item model for the kiosk cart screen
 data class SimpleCartItem(
     val name: String,
     val price: Double,
     val quantity: Int
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(navController: NavController) {
 
-    // Dummy cart data for now – replace with your ViewModel / repository later
     var cartItems by remember {
         mutableStateOf(
             listOf(
@@ -86,7 +84,6 @@ fun CartScreen(navController: NavController) {
         ) {
 
             if (cartItems.isEmpty()) {
-                // Empty state
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -97,7 +94,7 @@ fun CartScreen(navController: NavController) {
                     )
                 }
             } else {
-                // Cart list
+
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
@@ -114,9 +111,9 @@ fun CartScreen(navController: NavController) {
                     }
                 }
 
+                // 🔄 Updated from Divider to HorizontalDivider
                 HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-                // Total + Checkout
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -138,7 +135,8 @@ fun CartScreen(navController: NavController) {
 
                     TextButton(
                         onClick = {
-                            // TODO: hook up to your checkout flow
+                            // Go to the new checkout screen
+                            navController.navigate("kiosk_checkout")
                         },
                         shape = RoundedCornerShape(8.dp)
                     ) {
