@@ -17,8 +17,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,8 +58,10 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 @Composable
-fun AddItemPage(navController: NavController, tabIndex: Int = 0) {
-
+fun AddItemPage(
+    navController: NavController,
+    tabIndex: Int = 0
+) {
     val customColor = Color(0xFFAC0000)
     val darkGray = Color(0xFF8D838D)
     val focusManager = LocalFocusManager.current
@@ -77,11 +93,16 @@ fun AddItemPage(navController: NavController, tabIndex: Int = 0) {
     var screenVisible by remember { mutableStateOf(false) }
     val screenOffsetX by animateDpAsState(
         targetValue = if (screenVisible) 0.dp else 200.dp,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium)
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "screenOffsetX"
     )
     val screenAlpha by animateFloatAsState(
         targetValue = if (screenVisible) 1f else 0f,
-        animationSpec = spring()
+        animationSpec = spring(),
+        label = "screenAlpha"
     )
 
     LaunchedEffect(Unit) {
@@ -133,7 +154,13 @@ fun AddItemPage(navController: NavController, tabIndex: Int = 0) {
             )
         }
 
-        Text("ADD ITEM", fontSize = 28.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 20.dp))
+        Text(
+            text = "ADD ITEM",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 20.dp)
+        )
+
         Spacer(modifier = Modifier.height(10.dp))
 
         Column(
@@ -191,8 +218,16 @@ fun AddItemPage(navController: NavController, tabIndex: Int = 0) {
                     .clickable { itemLauncher.launch("image/*") },
                 contentAlignment = Alignment.Center
             ) {
-                if (itemImageUri == null) Text("Upload Item Image")
-                else AsyncImage(model = itemImageUri, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                if (itemImageUri == null) {
+                    Text("Upload Item Image")
+                } else {
+                    AsyncImage(
+                        model = itemImageUri,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
 
             // Category dropdown
@@ -212,7 +247,7 @@ fun AddItemPage(navController: NavController, tabIndex: Int = 0) {
                     )
                 )
 
-                DropdownMenu(
+                androidx.compose.material3.DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     modifier = Modifier.background(customColor)
@@ -240,9 +275,10 @@ fun AddItemPage(navController: NavController, tabIndex: Int = 0) {
                 }
             }
 
-            // New category
+            // New category section
             if (addNewCategory) {
                 Text("New Category", fontWeight = FontWeight.Bold)
+
                 OutlinedTextField(
                     value = newCategoryName,
                     onValueChange = { newCategoryName = it },
@@ -254,13 +290,22 @@ fun AddItemPage(navController: NavController, tabIndex: Int = 0) {
                         cursorColor = customColor
                     )
                 )
+
                 Box(
                     modifier = Modifier.fillMaxWidth().height(160.dp).background(Color(0xFFF2F2F2), RoundedCornerShape(12.dp))
                         .clickable { categoryLauncher.launch("image/*") },
                     contentAlignment = Alignment.Center
                 ) {
-                    if (newCategoryImage == null) Text("Upload Category Image")
-                    else AsyncImage(model = newCategoryImage, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                    if (newCategoryImage == null) {
+                        Text("Upload Category Image")
+                    } else {
+                        AsyncImage(
+                            model = newCategoryImage,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
             }
 
@@ -303,9 +348,11 @@ fun AddItemPage(navController: NavController, tabIndex: Int = 0) {
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                 modifier = Modifier.weight(1f)
-            ) { Text("Cancel") }
+            ) {
+                Text("Cancel")
+            }
 
-            Spacer(Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Button(
                 onClick = {
@@ -346,7 +393,9 @@ fun AddItemPage(navController: NavController, tabIndex: Int = 0) {
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = customColor),
                 modifier = Modifier.weight(1f)
-            ) { Text("Save") }
+            ) {
+                Text("Save")
+            }
         }
     }
 

@@ -17,8 +17,25 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -77,11 +94,14 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
     var dialogMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
-    // Screen animation
+    // --- screen enter animation ---
     var screenVisible by remember { mutableStateOf(false) }
     val screenOffsetX by animateDpAsState(
         targetValue = if (screenVisible) 0.dp else 200.dp,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium)
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
     )
     val screenAlpha by animateFloatAsState(
         targetValue = if (screenVisible) 1f else 0f,
@@ -153,7 +173,7 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
             .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
     ) {
 
-        // Back button
+        // --- Back button ---
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,8 +187,6 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
                 modifier = Modifier
                     .size(30.dp)
                     .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
                         onClick = {
                             screenVisible = false
                             scope.launch {
@@ -186,6 +204,7 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
         Text("EDIT ITEM", fontSize = 28.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 20.dp))
         Spacer(modifier = Modifier.width(10.dp))
 
+        // --- main form ---
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -193,6 +212,7 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+
             // Item Name
             OutlinedTextField(
                 value = itemName,
@@ -259,6 +279,7 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
             // Category dropdown
             Text("Select Category", fontWeight = FontWeight.SemiBold)
             var expanded by remember { mutableStateOf(false) }
+
             Box {
                 OutlinedTextField(
                     value = if (addNewCategory) "" else selectedCategory.ifEmpty { if (categoryList.isEmpty()) "Loading..." else "" },
@@ -274,6 +295,7 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
                         disabledLabelColor = darkGray
                     )
                 )
+
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
@@ -301,9 +323,10 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
                 }
             }
 
-            // New category
+            // New category fields
             if (addNewCategory) {
                 Text("New Category", fontWeight = FontWeight.Bold)
+
                 OutlinedTextField(
                     value = newCategoryName,
                     onValueChange = { newCategoryName = it },
@@ -315,6 +338,7 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
                         cursorColor = customColor
                     )
                 )
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -323,8 +347,16 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
                         .clickable { categoryLauncher.launch("image/*") },
                     contentAlignment = Alignment.Center
                 ) {
-                    if (newCategoryImage == null) Text("Upload Category Image")
-                    else AsyncImage(model = newCategoryImage, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                    if (newCategoryImage == null) {
+                        Text("Upload Category Image")
+                    } else {
+                        AsyncImage(
+                            model = newCategoryImage,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
             }
 
@@ -356,7 +388,7 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
             }
         }
 
-        // Bottom Buttons
+        // --- Bottom buttons ---
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -376,7 +408,9 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                 modifier = Modifier.weight(1f)
-            ) { Text("Cancel") }
+            ) {
+                Text("Cancel")
+            }
 
             Spacer(Modifier.width(12.dp))
 
@@ -445,7 +479,9 @@ fun EditItemPage(navController: NavController, itemId: String?, tabIndex: Int = 
                         }
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = customColor)
-                ) { Text("OK", fontWeight = FontWeight.Bold) }
+                ) {
+                    Text("OK", fontWeight = FontWeight.Bold)
+                }
             }
         )
     }

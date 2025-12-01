@@ -21,7 +21,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -70,6 +78,7 @@ data class CategoryItem(
 fun AdminMenuManagementScreen(navController: NavController) {
     val db = FirebaseFirestore.getInstance()
     val scope = rememberCoroutineScope()
+
     val redColor = Color(0xFFAC0000)
     val shadowColor = Color(0xFFFFEEDA)
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
@@ -207,8 +216,7 @@ fun AdminMenuManagementScreen(navController: NavController) {
             onClick = { navController.navigate("add_item_page?tabIndex=${pagerState.currentPage}") },
             modifier = Modifier.align(Alignment.BottomEnd).padding(end = 24.dp, bottom = 60.dp),
             containerColor = redColor,
-            iconColor = Color.White,
-            shadowColor = shadowColor
+            iconColor = Color.White
         )
     }
 
@@ -320,7 +328,11 @@ fun AdminProductsTab(
 }
 
 @Composable
-fun AdminProductCard(item: ProductItem, onEdit: () -> Unit, onDelete: () -> Unit) {
+fun AdminProductCard(
+    item: ProductItem,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFE8D9)),
@@ -373,8 +385,7 @@ fun PressableFAB(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     containerColor: Color = Color.Red,
-    iconColor: Color = Color.White,
-    shadowColor: Color = Color(0xFFFFEEDA)
+    iconColor: Color = Color.White
 ) {
     var pressed by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(targetValue = if (pressed) 1.5f else 1f,

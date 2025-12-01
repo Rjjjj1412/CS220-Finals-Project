@@ -50,6 +50,49 @@ import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
 import java.io.File
 
+
+//----------------------------------------
+//  FIXED: PasswordField is now visible
+//----------------------------------------
+@Composable
+fun PasswordField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    visible: Boolean,
+    onToggleVisibility: () -> Unit
+) {
+    val customColor = Color(0xFFAC0000)
+
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = customColor,
+            focusedLabelColor = customColor,
+            cursorColor = customColor
+        ),
+        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+            Icon(
+                painter = painterResource(
+                    if (visible) R.drawable.ic_eye_open else R.drawable.ic_eye_closed
+                ),
+                contentDescription = null,
+                modifier = Modifier.clickable { onToggleVisibility() }
+            )
+        },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+
+
+//----------------------------------------
+//  MAIN SCREEN
+//----------------------------------------
 @Composable
 fun AdminEditProfileScreen(navController: NavController) {
     val context = LocalContext.current
@@ -110,11 +153,10 @@ fun AdminEditProfileScreen(navController: NavController) {
             .graphicsLayer {
                 translationX = targetOffsetX - overshootX
                 alpha = overshootAlpha
-                scaleX = targetScale
-                scaleY = targetScale
             }
             .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
     ) {
+
         Column(
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
