@@ -21,7 +21,7 @@ fun SplashScreen(navController: NavController) {
     // Auto-Navigate after delay
     LaunchedEffect(Unit) {
         Handler(Looper.getMainLooper()).postDelayed({
-            navController.navigate("main_menu") {
+            navController.navigate("user_auth") {
                 popUpTo("splash") { inclusive = true }
             }
         }, 2000) // 2 seconds splash time

@@ -1,19 +1,26 @@
 package com.example.quickbitefinalproject.ui.admin
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -32,7 +39,6 @@ import com.example.quickbitefinalproject.R
 import com.example.quickbitefinalproject.service.FirebaseService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.compose.animation.*
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class)
 @Composable
@@ -47,6 +53,12 @@ fun LoginAdminScreen(navController: NavController) {
     val customColor = Color(0xFFAC0000)
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val scrollState = rememberScrollState() // Added scroll state for smaller screens
+
+    // DISABLE BACK BUTTON
+    BackHandler(enabled = true) {
+        // Do nothing when back is pressed to lock the screen
+    }
 
     Box(
         modifier = Modifier
@@ -82,7 +94,9 @@ fun LoginAdminScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 70.dp),
+                .padding(top = 40.dp) // Adjusted padding
+                .verticalScroll(scrollState) // Added vertical scroll
+                .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -105,6 +119,7 @@ fun LoginAdminScreen(navController: NavController) {
             Card(
                 modifier = Modifier
                     .padding(horizontal = 25.dp)
+                    .padding(bottom = 30.dp)
                     .fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(10.dp),
@@ -149,7 +164,7 @@ fun LoginAdminScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !isLoading,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Down) })
+                        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
                     )
 
                     Spacer(modifier = Modifier.height(15.dp))
@@ -255,6 +270,26 @@ fun LoginAdminScreen(navController: NavController) {
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // LOGIN AS CUSTOMER BUTTON
+                    TextButton(
+                        onClick = {
+                            navController.navigate("user_auth")
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = customColor,
+                            containerColor = Color.Transparent
+                        )
+                    ) {
+                        Text(
+                            text = "Login as Customer",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = customColor
+                        )
+                    }
                 }
             }
         }

@@ -4,20 +4,12 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +28,7 @@ import com.example.quickbitefinalproject.R
 @Composable
 fun AdminPanelScreen(navController: NavController) {
     var showLogoutDialog by remember { mutableStateOf(false) }
+    val customColor = Color(0xFFAC0000)
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -126,52 +119,52 @@ fun AdminPanelScreen(navController: NavController) {
         }
     }
 
-    // Logout confirmation dialog
+    // --- STANDARDIZED LOGOUT DIALOG ---
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            containerColor = Color(0xFFFFEEDA),
-            tonalElevation = 0.dp,
+            containerColor = Color.White, // White Container
             title = {
                 Text(
                     text = "Log Out",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    color = Color.Black // Black Text
                 )
             },
             text = {
                 Text(
                     text = "Are you sure you want to Log Out?",
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    color = Color.Black // Black Text
                 )
             },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         showLogoutDialog = false
                         navController.navigate("admin_login") {
                             popUpTo("admin_panel") { inclusive = true }
                         }
                     },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = Color(0xFFAC0000)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = customColor // Red background
                     )
                 ) {
                     Text(
-                        "Yes",
+                        text = "Yes",
+                        color = Color.White, // White text
                         fontWeight = FontWeight.Bold
                     )
                 }
             },
             dismissButton = {
                 TextButton(
-                    onClick = { showLogoutDialog = false },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = Color(0xFF646464)
-                    )
+                    onClick = { showLogoutDialog = false }
                 ) {
                     Text(
-                        "No",
+                        text = "No",
+                        color = Color.Gray, // Gray text for cancel
                         fontWeight = FontWeight.Bold
                     )
                 }
