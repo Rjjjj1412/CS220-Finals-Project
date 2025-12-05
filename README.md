@@ -1,7 +1,11 @@
-# QuickBite - Android Food Ordering App
+# CS220 - 2 GROUP 7 Final Project: QuickBite - Android Food Ordering App
 
 QuickBite is a modern Android application built with **Kotlin** and **Jetpack Compose**. It features a dual-interface system serving both Restaurant Administrators and Customers. The app utilizes **Firebase** for real-time database management, authentication, and order tracking.
 
+## Team Members
+* RJ Castellano
+* Andrei Stephen Yap
+  
 ## 📱 Project Overview
 
 QuickBite provides a seamless experience for food ordering.
